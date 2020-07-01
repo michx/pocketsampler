@@ -2,19 +2,21 @@
 
 
 import argparse
-import signal,sys
+import signal,sys,os
 import time
 
-
+from pylibpcap.pcap import sniff
 
 import scapy
-from scapy.all import *
-from scapy.all import sniff
+#from scapy.all import *
+#from scapy.all import sniff
+from scapy.layers.all import Ether
 from scapy.all import IP
 from scapy.all import DNSQR
 from scapy.all import UDP
 from scapy.all import TCP
 from scapy.all import DNS
+from scapy.all import send
 from datetime import datetime
 
 import rb_netflow as rbnf
@@ -43,7 +45,7 @@ class GracefulKiller:
 
 def send_to_collector(records_to_send):
     global IP_DST,IP_SRC,PORT_SRC,PORT_DST,flow_Sequence
-    s = conf.L2socket()
+    #s = conf.L2socket()
     # Current timestamp in seconds
     tnow = int((datetime.utcnow()-datetime(1970,1,1)).total_seconds())
     # Netflow5
@@ -68,11 +70,12 @@ def send_to_collector(records_to_send):
     for r in records_to_send:
         data /= r
     sys.stdout.write('.')
-    s.send(data)
+    send(data, verbose=0)
     flow_Sequence+=1
 
 def process(pkt):
     global records,sampling_rate,buffer_count,records_in_buffer,packet_count_for_sampling
+    pkt=Ether(pkt)
     if pkt.haslayer(DNSQR) and UDP in pkt and pkt[UDP].sport == 53:
         for i in range(0, pkt[DNS].ancount):
             name = pkt[DNS].an[i].rrname
@@ -166,11 +169,12 @@ def main():
     else:
         buffer_count=int(args.buffer_count)
 
+    for plen, t, buf in sniff(IP_INT, filters="ip and (udp or tcp)", count=-1, promisc=1):
+        process(buf)
 
-
-
-    sn=AsyncSniffer(iface=IP_INT,filter='ip and (udp or tcp)', prn=process, store=0)
-    sn.start()
+    sniff()
+    #sn=AsyncSniffer(iface=IP_INT,filter='ip and (udp or tcp)', prn=process, store=0)
+    #sn.start()
 
 
 if __name__ == '__main__':

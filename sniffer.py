@@ -17,7 +17,7 @@ class IPSniff:
         # The raw in (listen) socket is a L2 raw socket that listens
         # for all packets going through a specific interface.
         self.ins = socket.socket(
-            socket.AF_PACKET, socket.SOCK_RAW, socket.htons(ETH_P_ALL))
+            socket.AF_INET, socket.SOCK_RAW, socket.htons(ETH_P_ALL))
         self.ins.setsockopt(socket.SOL_SOCKET, socket.SO_RCVBUF, 2 ** 30)
         self.ins.bind((self.interface_name, ETH_P_ALL))
 
@@ -79,3 +79,6 @@ def test_outgoing_callback(src, dst, frame):
     pass
 # print("outgoing - src=%s, dst=%s, frame len = %d"
 #    %(socket.inet_ntoa(src), socket.inet_ntoa(dst), len(frame)))
+
+ip_sniff = IPSniff('en0', test_incoming_callback, test_outgoing_callback)
+ip_sniff.recv()
