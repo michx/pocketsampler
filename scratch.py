@@ -8,8 +8,6 @@ import time
 from pylibpcap.pcap import sniff
 
 import scapy
-#from scapy.all import *
-#from scapy.all import sniff
 from scapy.layers.all import Ether
 from scapy.all import IP
 from scapy.all import DNSQR
@@ -37,14 +35,6 @@ current_iface={}
 total_flow_packets_sent=0
 total_packets_captured=0
 
-class GracefulKiller:
-  kill_now = False
-  def __init__(self):
-    signal.signal(signal.SIGINT, self.exit_gracefully)
-    signal.signal(signal.SIGTERM, self.exit_gracefully)
-
-  def exit_gracefully(self,signum, frame):
-    self.kill_now = True
 
 
 
@@ -90,7 +80,6 @@ def process(pkt):
             tpe = pkt[DNS].an[i].type
             now = datetime.now()
             data = {'Domain': name, 'IP': solved, 'Type': tpe, 'occurrence': 1, 'Last_seen': datetime.now()}
-            #print name, '   ', solved, '  ', tpe
     packet_count_for_sampling+=1
     if packet_count_for_sampling==sampling_rate:
         if TCP in pkt:
@@ -193,11 +182,8 @@ def main():
         print 'Service interrupted.'
         print 'Total packets captured: ',total_packets_captured
         print 'Total Flow packets sent to collector: ',total_flow_packets_sent
-    #sniff()
-    #sn=AsyncSniffer(iface=IP_INT,filter='ip and (udp or tcp)', prn=process, store=0)
-    #sn.start()
+
 
 
 if __name__ == '__main__':
-
     main()
