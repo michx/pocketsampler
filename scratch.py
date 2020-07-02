@@ -18,6 +18,7 @@ from scapy.all import TCP
 from scapy.all import DNS
 from scapy.all import send
 from datetime import datetime
+import psutil
 
 import rb_netflow as rbnf
 
@@ -26,11 +27,13 @@ PORT_SRC=5000
 PORT_DST=2055
 sampling_rate=5
 buffer_count=10
+
+
 records = []  # Array containing records to be sent
 records_in_buffer = 0  # Counts records to be stored before sending them
 packet_count_for_sampling = 0  # Counts packets before sampling occurs
 flow_Sequence=1
-
+current_iface={}
 
 class GracefulKiller:
   kill_now = False
@@ -74,7 +77,9 @@ def send_to_collector(records_to_send):
     flow_Sequence+=1
 
 def process(pkt):
-    global records,sampling_rate,buffer_count,records_in_buffer,packet_count_for_sampling
+    global records,sampling_rate,buffer_count,records_in_buffer,packet_count_for_sampling,current_iface
+    ifIn = 100
+    ifOut = 200
     pkt=Ether(pkt)
     if pkt.haslayer(DNSQR) and UDP in pkt and pkt[UDP].sport == 53:
         for i in range(0, pkt[DNS].ancount):
@@ -90,10 +95,13 @@ def process(pkt):
             flgs=pkt[TCP].flags
         else:
             flgs=''
+        if pkt[IP].src!=current_iface[0].address:
+            ifIn=200
+            ifOut=100
         records.append(
             rbnf.NetflowRecordV5( \
                 src=pkt[IP].src, dst=pkt[IP].dst, nexthop="192.168.1.1", \
-                input=100, output=200, dpkts=1, dOctets=pkt[IP].len, \
+                input=ifIn, output=ifOut, dpkts=1, dOctets=pkt[IP].len, \
                 first=1, last=2, srcport=pkt[IP].sport, \
                 dstport=pkt[IP].dport, pad1=0, tcpFlags=flgs, \
                 prot=pkt[IP].proto , tos=0x00, src_as=0, dst_as=0, \
@@ -108,11 +116,11 @@ def process(pkt):
 
 
 def main():
-    global IP_DST,IP_SRC,PORT_SRC,PORT_DST,sampling_rate,buffer_count
+    global IP_DST,IP_SRC,PORT_SRC,PORT_DST,sampling_rate,buffer_count, current_iface
     if os.getuid() != 0:
         print "You need to be root to run this, sorry."
-        return
-
+        exit()
+    ifaces_in_device=psutil.net_if_addrs().keys()
     parser = argparse.ArgumentParser(description='Netflow generator for laptops')
     parser.add_argument('-i', '--interface', dest='int',
                         help='Monitored interface')
@@ -144,6 +152,12 @@ def main():
         print "Monitored interface is mandatory. Aborting..."
         exit()
     else:
+        if args.int not in ifaces_in_device:
+            print "Wrong interface name. Please select an interface available on your system:"
+            for items in ifaces_in_device:
+                print items
+            exit()
+        current_iface=psutil.net_if_addrs()[args.int]
         IP_INT=args.int
     if not args.src_port:
         PORT_SRC=int(5000)
