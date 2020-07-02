@@ -34,6 +34,8 @@ records_in_buffer = 0  # Counts records to be stored before sending them
 packet_count_for_sampling = 0  # Counts packets before sampling occurs
 flow_Sequence=1
 current_iface={}
+total_flow_packets_sent=0
+total_packets_captured=0
 
 class GracefulKiller:
   kill_now = False
@@ -47,7 +49,7 @@ class GracefulKiller:
 
 
 def send_to_collector(records_to_send):
-    global IP_DST,IP_SRC,PORT_SRC,PORT_DST,flow_Sequence
+    global total_flow_packets_sent,IP_SRC,PORT_SRC,PORT_DST,flow_Sequence
     #s = conf.L2socket()
     # Current timestamp in seconds
     tnow = int((datetime.utcnow()-datetime(1970,1,1)).total_seconds())
@@ -72,12 +74,12 @@ def send_to_collector(records_to_send):
     #print data[0].show()
     for r in records_to_send:
         data /= r
-    sys.stdout.write('.')
     send(data, verbose=0)
     flow_Sequence+=1
+    total_flow_packets_sent+=1
 
 def process(pkt):
-    global records,sampling_rate,buffer_count,records_in_buffer,packet_count_for_sampling,current_iface
+    global records,sampling_rate,buffer_count,records_in_buffer,packet_count_for_sampling,current_iface, total_packets_captured
     ifIn = 100
     ifOut = 200
     pkt=Ether(pkt)
@@ -113,6 +115,7 @@ def process(pkt):
             records_in_buffer=0
             records=[]
         packet_count_for_sampling=0
+    total_packets_captured += 1
 
 
 def main():
@@ -182,17 +185,19 @@ def main():
         buffer_count=int(10)
     else:
         buffer_count=int(args.buffer_count)
-
-    for plen, t, buf in sniff(IP_INT, filters="ip and (udp or tcp)", count=-1, promisc=1):
-        process(buf)
-
-    sniff()
+    print "Capturing packets on interface ",IP_INT
+    try:
+        for plen, t, buf in sniff(IP_INT, filters="ip and (udp or tcp)", count=-1, promisc=1):
+            process(buf)
+    except KeyboardInterrupt:
+        print 'Service interrupted.'
+        print 'Total packets captured: ',total_packets_captured
+        print 'Total Flow packets sent to collector: ',total_flow_packets_sent
+    #sniff()
     #sn=AsyncSniffer(iface=IP_INT,filter='ip and (udp or tcp)', prn=process, store=0)
     #sn.start()
 
 
 if __name__ == '__main__':
-    killer = GracefulKiller()
-    while not killer.kill_now:
-        time.sleep(1)
-        main()
+
+    main()
