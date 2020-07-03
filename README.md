@@ -11,12 +11,12 @@ The script requires libpcap source libraries:
 sudo apt install libpcap-dev
 
 
-Installation 
+<b>Installation</b> 
 
 pip install -r requirements.txt
 
 
-Usage
+<b>Usage</b>
 
 You can find help inline, as below.
 
