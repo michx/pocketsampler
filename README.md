@@ -25,13 +25,13 @@ usage: scratch.py [-h] [-i INT] [-s SRC_IP] [-sp SRC_PORT] [-d DST_IP]
 
 Netflow generator for laptops
 
-optional arguments:
-  -h, --help            show this help message and exit
+optional arguments:  
+-h, --help            show this help message and exit. 
 
-  -i INT, --interface INT
-    Monitored interface
-  -s SRC_IP, --source SRC_IP
-    Source IP address. Used to send packets to collector
+  -i INT, --interface INT. 
+    Monitored interface. 
+  -s SRC_IP, --source SRC_IP. 
+    Source IP address. Used to send packets to collector. 
   -sp SRC_PORT, --sport SRC_PORT
    Source port. Used to send packets to collector.Default 5000
   -d DST_IP, --destination DST_IP
