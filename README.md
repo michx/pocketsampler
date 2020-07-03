@@ -4,7 +4,7 @@ This is a simple Flow Generator. It captures traffic from desired interface and 
 It uses scapy and libpcap libraries.
 
 
-Before installing
+<b>Before installing</b>
 
 The script requires libpcap source libraries:
 
