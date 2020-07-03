@@ -27,20 +27,20 @@ Netflow generator for laptops
 
 optional arguments:  
 -h, --help            show this help message and exit. 
-
-  -i INT, --interface INT. 
-    Monitored interface. 
-  -s SRC_IP, --source SRC_IP. 
-    Source IP address. Used to send packets to collector. 
-  -sp SRC_PORT, --sport SRC_PORT
-   Source port. Used to send packets to collector.Default 5000
-  -d DST_IP, --destination DST_IP
-    Destination IP address. Used to send packets to collector
-  -dp DST_PORT, --dport DST_PORT
-    Destination port. Used to send packets to collector.Default 2055
-  -r SAMPLING_RATE, --rate SAMPLING_RATE
-    Sampling 1 out of r packets. Default 5
-  -b BUFFER_COUNT, --buffer BUFFER_COUNT
-    Number of packets stored in buffer before sending them. Default 10
+<br/>
+  -i INT, --interface INT<br/>
+    Monitored interface<br/>
+  -s SRC_IP, --source SRC_IP<br/>
+    Source IP address. Used to send packets to collector<br/>
+  -sp SRC_PORT, --sport SRC_PORT<br/>
+   Source port. Used to send packets to collector.Default 5000<br/>
+  -d DST_IP, --destination DST_IP<br/>
+    Destination IP address. Used to send packets to collector<br/>
+  -dp DST_PORT, --dport DST_PORT<br/>
+    Destination port. Used to send packets to collector.Default 2055<br/>
+  -r SAMPLING_RATE, --rate SAMPLING_RATE<br/>
+    Sampling 1 out of r packets. Default 5<br/>
+  -b BUFFER_COUNT, --buffer BUFFER_COUNT<br/>
+    Number of packets stored in buffer before sending them. Default 10<br/>
 
 
