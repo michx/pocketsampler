@@ -8,12 +8,12 @@ It uses scapy and libpcap libraries.
 
 The script requires libpcap source libraries:
 
-sudo apt install libpcap-dev
+<i>sudo apt install libpcap-dev</i>
 
 
 ## Installation
 
-pip install -r requirements.txt
+<i>pip install -r requirements.txt</i>
 
 
 ## Usage
