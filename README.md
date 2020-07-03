@@ -1,22 +1,22 @@
-# pocketsampler
+# Pocketsampler
 
 This is a simple Flow Generator. It captures traffic from desired interface and creates flow samples to be sent to a desired collector.
 It uses scapy and libpcap libraries.
 
 
-<b>Before installing</b>
+## Before installing
 
 The script requires libpcap source libraries:
 
 sudo apt install libpcap-dev
 
 
-<b>Installation</b> 
+## Installation
 
 pip install -r requirements.txt
 
 
-<b>Usage</b>
+## Usage
 
 You can find help inline, as below.
 
