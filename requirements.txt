@@ -1,0 +1,9 @@
+cffi==1.14.0
+Cython==0.29.20
+dnet==1.12
+libpcap==1.10.0b5
+psutil==5.7.0
+pycparser==2.20
+python-libpcap==0.2.3
+scapy==2.4.3
+
